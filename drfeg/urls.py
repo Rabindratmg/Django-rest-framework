@@ -18,6 +18,6 @@ from django.urls import path
 from apprf import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('',views.BlogApi, name='blogapi'),
-    path('api/<int:pk>',views.BlogApiDetail, name='blogapidetails')
+    path('',views.BlogApi.as_view(), name='blogapi'),
+    path('api/<int:pk>',views.BlogApiDetail.as_view(), name='blogapidetails')
 ]
