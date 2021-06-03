@@ -4,7 +4,7 @@ from .models import Blog
 from .serializer import BlogSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.http import request
+from django.http import request, HttpResponse
 
 # Create your views here.
 
@@ -21,6 +21,29 @@ def BlogApi(request):
             return Response(serializer.data)
         else:
             return Response(serializer.errors)
+
+@api_view(['GET','PUT','DELETE'])
+def BlogApiDetail(request,pk):
+    blog = Blog.objects.get(pk=pk)
+    if request.method == 'GET':
+        seralizer = BlogSerializer(blog)
+        return Response(seralizer.data)
+    elif request.method=='PUT':
+        seralizer = BlogSerializer(data=request.data)
+        if seralizer.is_valid():
+            seralizer.save()
+            return Response(seralizer.data)
+        else:
+            return Response(seralizer.error)
+        
+    elif request.method == 'DELETE':
+        blog.delete()
+        return HttpResponse('Deleted')
+
+
+
+
+
 
 
 

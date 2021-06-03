@@ -19,4 +19,5 @@ from apprf import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.BlogApi, name='blogapi'),
+    path('api/<int:pk>',views.BlogApiDetail, name='blogapidetails')
 ]
