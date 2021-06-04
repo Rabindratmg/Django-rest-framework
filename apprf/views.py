@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from rest_framework import serializers
+import rest_framework
+from rest_framework import permissions
 from rest_framework.views import APIView
 from .models import Blog
 from .serializer import BlogSerializer
@@ -8,6 +10,8 @@ from rest_framework.response import Response
 from django.http import request, HttpResponse
 from rest_framework.views import APIView
 from rest_framework import generics,mixins
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication,TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 
@@ -86,9 +90,11 @@ from rest_framework import generics,mixins
 
 
 # Class base view with generic and mixins
-class BlogApi(generics.GenericAPIView,mixins.ListModelMixin,mixins.CreateModelMixin,mixins.UpdateModelMixin,mixins.RetrieveModelMixin,mixins.DestroyModelMixin):
+class BlogApi(generics.GenericAPIView,mixins.ListModelMixin,mixins.CreateModelMixin):
     serializer_class = BlogSerializer
     queryset = Blog.objects.all()
+    authentication_classes =[TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     
     
     def get(self,request):
@@ -119,6 +125,9 @@ class BlogDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin,mixins.U
 
     def delete(self,request,pk=None):
         return self.destroy(request,pk)
+
+
+
 
 
 
