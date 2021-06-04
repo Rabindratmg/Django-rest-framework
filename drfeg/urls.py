@@ -19,5 +19,5 @@ from apprf import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.BlogApi.as_view(), name='blogapi'),
-    path('api/<int:pk>',views.BlogApiDetail.as_view(), name='blogapidetails')
+    path('api/<int:pk>',views.BlogDetailView.as_view(), name='blogapidetails')
 ]

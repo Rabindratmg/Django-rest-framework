@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.http import request, HttpResponse
 from rest_framework.views import APIView
+from rest_framework import generics,mixins
 
 # Create your views here.
 
@@ -47,41 +48,81 @@ from rest_framework.views import APIView
 
 # this is classbase view
 
-class BlogApi(APIView):   
-    def get(self,request):
-        blog=Blog.objects.all()
-        serializer= BlogSerializer(blog,many= True)
-        return Response(serializer.data)
+# class BlogApi(APIView):   
+#     def get(self,request):
+#         blog=Blog.objects.all()
+#         serializer= BlogSerializer(blog,many= True)
+#         return Response(serializer.data)
 
-    def post(self,request):
-        serializer= BlogSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors)
+#     def post(self,request):
+#         serializer= BlogSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.errors)
             
 
-class BlogApiDetail(APIView):
+# class BlogApiDetail(APIView):
+#     def get(self,request,pk=None):
+#          blog = Blog.objects.get(pk=pk)
+#          serializer= BlogSerializer(blog)
+#          return Response(serializer.data)
+
+
+#     def put(self,request,pk=None):
+#         blog=Blog.objects.get(pk=pk)
+#         serailizer = BlogSerializer(blog,data=request.data)
+#         if serailizer.is_valid():
+#             serailizer.save()   
+#             return Response(serailizer.data)
+#         else:
+#             return Response(serailizer.error)
+
+#     def delete(self,request,pk=None):
+#         blog=Blog.objects.get(pk=pk)
+#         blog.delete()
+#         return Response(status=200)
+
+
+# Class base view with generic and mixins
+class BlogApi(generics.GenericAPIView,mixins.ListModelMixin,mixins.CreateModelMixin,mixins.UpdateModelMixin,mixins.RetrieveModelMixin,mixins.DestroyModelMixin):
+    serializer_class = BlogSerializer
+    queryset = Blog.objects.all()
+    
+    
+    def get(self,request):
+        return self.list(request)
+
+    
+    def post(self,request):
+        return self.create(request)
+
+    
+   
+
+
+
+class BlogDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
+    serializer_class = BlogSerializer
+    queryset = Blog.objects.all()
+    lookup_field= 'pk'
+    
+
     def get(self,request,pk=None):
-         blog = Blog.objects.get(pk=pk)
-         serializer= BlogSerializer(blog)
-         return Response(serializer.data)
+        return self.retrieve(request,pk)
 
+    
+    def put(self,request, pk=None):
+        return self.update(request,pk)
 
-    def put(self,request,pk=None):
-        blog=Blog.objects.get(pk=pk)
-        serailizer = BlogSerializer(blog,data=request.data)
-        if serailizer.is_valid():
-            serailizer.save()   
-            return Response(serailizer.data)
-        else:
-            return Response(serailizer.error)
 
     def delete(self,request,pk=None):
-        blog=Blog.objects.get(pk=pk)
-        blog.delete()
-        return Response(status=200)
+        return self.destroy(request,pk)
+
+
+
+
 
 
 
