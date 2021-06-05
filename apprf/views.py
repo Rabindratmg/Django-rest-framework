@@ -133,47 +133,49 @@ from django.shortcuts import get_object_or_404
 
 #Viewset
 
-class BlogView(viewsets.ViewSet):
+# class BlogView(viewsets.ViewSet):
     
 
-    def list(self,request):
-        blog= Blog.objects.all()
-        serializer= BlogSerializer(blog,many=True)
-        return Response(serializer.data)
+#     def list(self,request):
+#         blog= Blog.objects.all()
+#         serializer= BlogSerializer(blog,many=True)
+#         return Response(serializer.data)
 
-    def create(self,request):
-        serializer=BlogSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.error)
+#     def create(self,request):
+#         serializer=BlogSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.error)
 
-    def retrieve(self,request,pk=None):
-        queryset = Blog.objects.all()
-        blog = get_object_or_404(queryset, pk=pk)
-        serializer= BlogSerializer(blog)
-        return Response(serializer.data)
-
-
-    def update(self,request,pk=None):
-        blog= Blog.objects.get(pk=pk)
-        serializer=BlogSerializer(blog,data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.error)
+#     def retrieve(self,request,pk=None):
+#         queryset = Blog.objects.all()
+#         blog = get_object_or_404(queryset, pk=pk)
+#         serializer= BlogSerializer(blog)
+#         return Response(serializer.data)
 
 
-    def destroy(self,request,pk=None):
-        blog= Blog.objects.get(pk=pk)
-        blog.delete()
-        return Response(status=200)
+#     def update(self,request,pk=None):
+#         blog= Blog.objects.get(pk=pk)
+#         serializer=BlogSerializer(blog,data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.error)
+
+
+#     def destroy(self,request,pk=None):
+#         blog= Blog.objects.get(pk=pk)
+#         blog.delete()
+#         return Response(status=200)
 
 
 
-
+class BlogView(viewsets.ModelViewSet):
+    queryset=Blog.objects.all()
+    serializer_class=BlogSerializer
 
 
 
