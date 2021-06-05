@@ -1,7 +1,9 @@
+from re import search
 from django.shortcuts import render
 from rest_framework import serializers
 import rest_framework
 from rest_framework import permissions
+from rest_framework import response
 from rest_framework.views import APIView
 from .models import Blog
 from .serializer import BlogSerializer
@@ -12,7 +14,8 @@ from rest_framework.views import APIView
 from rest_framework import generics,mixins
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication,TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-
+from rest_framework import viewsets
+from django.shortcuts import get_object_or_404
 # Create your views here.
 
 # This is function base views using @apiview decorator 
@@ -90,41 +93,88 @@ from rest_framework.permissions import IsAuthenticated
 
 
 # Class base view with generic and mixins
-class BlogApi(generics.GenericAPIView,mixins.ListModelMixin,mixins.CreateModelMixin):
-    serializer_class = BlogSerializer
-    queryset = Blog.objects.all()
-    authentication_classes =[TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+# class BlogApi(generics.GenericAPIView,mixins.ListModelMixin,mixins.CreateModelMixin):
+#     serializer_class = BlogSerializer
+#     queryset = Blog.objects.all()
+#     authentication_classes =[TokenAuthentication]
+#     permission_classes = [IsAuthenticated]
     
     
-    def get(self,request):
-        return self.list(request)
+#     def get(self,request):
+#         return self.list(request)
 
     
-    def post(self,request):
-        return self.create(request)
+#     def post(self,request):
+#         return self.create(request)
 
     
    
 
 
 
-class BlogDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
-    serializer_class = BlogSerializer
-    queryset = Blog.objects.all()
-    lookup_field= 'pk'
+# class BlogDetailView(generics.GenericAPIView, mixins.RetrieveModelMixin,mixins.UpdateModelMixin,mixins.DestroyModelMixin):
+#     serializer_class = BlogSerializer
+#     queryset = Blog.objects.all()
+#     lookup_field= 'pk'
     
 
-    def get(self,request,pk=None):
-        return self.retrieve(request,pk)
+#     def get(self,request,pk=None):
+#         return self.retrieve(request,pk)
 
     
-    def put(self,request, pk=None):
-        return self.update(request,pk)
+#     def put(self,request, pk=None):
+#         return self.update(request,pk)
 
 
-    def delete(self,request,pk=None):
-        return self.destroy(request,pk)
+#     def delete(self,request,pk=None):
+#         return self.destroy(request,pk)
+
+
+
+#Viewset
+
+class BlogView(viewsets.ViewSet):
+    
+
+    def list(self,request):
+        blog= Blog.objects.all()
+        serializer= BlogSerializer(blog,many=True)
+        return Response(serializer.data)
+
+    def create(self,request):
+        serializer=BlogSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.error)
+
+    def retrieve(self,request,pk=None):
+        queryset = Blog.objects.all()
+        blog = get_object_or_404(queryset, pk=pk)
+        serializer= BlogSerializer(blog)
+        return Response(serializer.data)
+
+
+    def update(self,request,pk=None):
+        blog= Blog.objects.get(pk=pk)
+        serializer=BlogSerializer(blog,data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.error)
+
+
+    def destroy(self,request,pk=None):
+        blog= Blog.objects.get(pk=pk)
+        blog.delete()
+        return Response(status=200)
+
+
+
+
+
 
 
 
